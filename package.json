@@ -1,0 +1,26 @@
+{
+  "name": "coursework",
+  "version": "1.0.0",
+  "description": "Programming Black Coursework for 24/25",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SlinkMass/Progblack24-25-Coursework.git#main"
+  },
+  "author": "Theo Louis (theo.louis1@hotmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SlinkMass/Progblack24-25-Coursework/issues"
+  },
+  "homepage": "https://github.com/SlinkMass/Progblack24-25-Coursework/tree/main#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2"
+  }
+}
