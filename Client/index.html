@@ -7,29 +7,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">MoreMusic</a>
-                <div class="container-fluid">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                        <a class="nav-link" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link" href="#">Next</a>
-                        </li>
-                        <li class="nav-item">
-                        <a class="nav-link disabled" href="#">About</a>
-                        </li>
-                    </ul>
-                </div>
+<body class = "bg-light">
+    <div class="container-fluid bg-secondary">
+        <div class="row">
+            <div class="col col-lg-2">
+                <img src="./assets/img/logo.png">
             </div>
-        </nav>
-    </header>
-    
+            <div class="col-md-auto mt-5">
+                <h1>MoreMusic</h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="PrevGenres" class="col-3 position-fixed container border" style="top: 0; right: 0; height: 100vh; width: 25vh; overflow-y: auto; background-color: #f8f9fa;">
+        <p>Previous genres</p>
+    </div>
+
     <main role="main" class="container">
         <div class="container-fluid mt-5 pt-5">
             <div class="container">
@@ -37,10 +32,10 @@
             </div>
             <div class="container">
                 <div class="row">
-                    <div class="col">
+                    <div class="col col-md-auto">
                         <p id="genre">Genre Here...</p>
                     </div>
-                    <div class="col">
+                    <div class="col col-md-auto">
                         <button id = "new_genre_button">New Genre</button>
                     </div>
                 </div>
@@ -48,25 +43,83 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-sm">
-                    <img src="./assets/img/Placeholder.png">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong1">
+                    <div class = "container-fluid">
+                        <img id = "album1" src="">
+                    </div>
+                    <p id = "song1" class = "text-white"></p>
+                    <p id = "artist1" class = "text-white"></p>
                 </div>
-                <div class="col-sm">
-                    <img src="./assets/img/Placeholder.png">
-                </div>
-                <div class="col-sm">
-                    <img src="./assets/img/Placeholder.png">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong2">
+                    <div class = "container-fluid">
+                        <img id = "album2" src="">
+                    </div>
+                    <p id = "song2" class = "text-white"></p>
+                    <p id = "artist2" class = "text-white"></p>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm">
-                    <img src="./assets/img/Placeholder.png">
+            <div class="row mt-4">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong3">
+                    <div class = "container-fluid">
+                        <img id = "album3" src="">
+                    </div>
+                    <p id = "song3" class = "text-white"></p>
+                    <p id = "artist3" class = "text-white"></p>
                 </div>
-                <div class="col-sm">
-                    <img src="./assets/img/Placeholder.png">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong4">
+                    <div class = "container-fluid">
+                        <img id = "album4" src="">
+                    </div>
+                    <p id = "song4" class = "text-white"></p>
+                    <p id = "artist4" class = "text-white"></p>
                 </div>
-                <div class="col-sm">
-                    <img src="./assets/img/Placeholder.png">
+            </div>
+            <div class="row mt-4">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong5">
+                    <div class = "container-fluid">
+                        <img id = "album5" src="">
+                    </div>
+                    <p id = "song5" class = "text-white"></p>
+                    <p id = "artist5" class = "text-white"></p>
+                </div>
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong6">
+                    <div class = "container-fluid">
+                        <img id = "album6" src="">
+                    </div>
+                    <p id = "song6" class = "text-white"></p>
+                    <p id = "artist6" class = "text-white"></p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong7">
+                    <div class = "container-fluid">
+                        <img id = "album7" src="">
+                    </div>
+                    <p id = "song7" class = "text-white"></p>
+                    <p id = "artist7" class = "text-white"></p>
+                </div>
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong8">
+                    <div class = "container-fluid">
+                        <img id = "album8" src="">
+                    </div>
+                    <p id = "song8" class = "text-white"></p>
+                    <p id = "artist8" class = "text-white"></p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong9">
+                    <div class = "container-fluid">
+                        <img id = "album9" src="">
+                    </div>
+                    <p id = "song9" class = "text-white"></p>
+                    <p id = "artist9" class = "text-white"></p>
+                </div>
+                <div class="col-sm center-block bg-dark border border-primary rounded text-center" id = "fullsong10">
+                    <div class = "container-fluid">
+                        <img id = "album10" src="">
+                    </div>
+                    <p id = "song10" class = "text-white"></p>
+                    <p id = "artist10" class = "text-white"></p>
                 </div>
             </div>
         </div>

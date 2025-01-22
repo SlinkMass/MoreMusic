@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/SlinkMass/Progblack24-25-Coursework/tree/main#readme",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2"

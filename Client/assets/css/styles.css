@@ -1,0 +1,10 @@
+.previous_genres:hover{
+    cursor: pointer;
+}
+.col-sm {
+    width:20%;
+    margin:0 10%;
+}
+.col-sm:hover{
+    cursor: pointer;
+}
