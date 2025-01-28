@@ -2,6 +2,11 @@
     font-size: 100%;
     font-family: "Courier New", Courier, monospace;
 }
+
+.full {
+    min-height: 100vh;
+}
+
 .col-sm {
     width:20%;
     margin:0 10%;
@@ -36,6 +41,22 @@
     transform: translate(-50%, -50%);
 }
 
-.link {
+a {
     text-decoration:none;
+}
+
+.pagination {
+    display: none;
+    --bs-pagination-color: white;
+    --bs-pagination-bg: dark;
+    --bs-pagination-border-color: #6c757e;
+    --bs-pagination-hover-color: white;
+    --bs-pagination-hover-bg: #6c757e;
+    --bs-pagination-focus-color: white;
+    --bs-pagination-focus-bg: #6c757e;
+    --bs-pagination-focus-box-shadow: dark;
+}
+
+#content{
+    display: none;
 }
