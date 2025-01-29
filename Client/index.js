@@ -13,17 +13,18 @@ if (parameters.has("user")) {
 //Add event listeners to see songs from albums
 Array.from(document.getElementsByClassName("seeSongs")).forEach(function(element) {
     element.addEventListener("click", async function(event){
+        const r =  new RegExp("\\d+")
         if (event.target.innerHTML == "See Songs") {
-            let albumID = albumIDs[Number(event.target.id.slice(-1))-1]
+            let albumID = albumIDs[Number(event.target.id.match(r))-1]
             let response = await fetch("/album_data?" + new URLSearchParams({"id":albumID}))
             if (response.ok) {
-                create_album_songs(await response.json(), String(event.target.id.slice(-1)))
+                create_album_songs(await response.json(), String(event.target.id.match(r)))
             }
         } else {
-            let album_button = document.getElementById("albumButton" + String(event.target.id.slice(-1)))
+            let album_button = document.getElementById("albumButton" + String(event.target.id.match(r)))
             album_button.innerHTML = "See Songs"
             album_button.className = "btn btn-outline-success seeSongs"
-            let albumSongs = document.getElementById("albumSongs" + String(event.target.id.slice(-1)))
+            let albumSongs = document.getElementById("albumSongs" + String(event.target.id.match(r)))
             albumSongs.innerHTML = ""
         }   
     })
@@ -88,8 +89,8 @@ NewGenre.addEventListener("click", async function(event){
         if (! response.ok) {
             throw new Error(response.status);
         }
-        let body = await response.text();
-        document.getElementById("genre").innerHTML=body;
+        let body = await response.json();
+        document.getElementById("genre").innerHTML=body["genre"];
     } catch(e) {
         alert(e);
     }
@@ -283,7 +284,7 @@ async function get_songs(genre) {
             headers: {
                 "Content-Type":"application/json"
             },
-            body: JSON.stringify({"genre": genre}),
+            body: JSON.stringify({"genre": genre, "limit":10}),
 
         })
         if (! response.ok) {

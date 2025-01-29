@@ -2,10 +2,10 @@
   "name": "coursework",
   "version": "1.0.0",
   "description": "Programming Black Coursework for 24/25",
-  "main": "server.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "node server.js"
   },
   "repository": {
@@ -23,5 +23,12 @@
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "transform": {}
   }
 }
