@@ -19,6 +19,8 @@ Array.from(document.getElementsByClassName("seeSongs")).forEach(function(element
             let response = await fetch("/album_data?" + new URLSearchParams({"id":albumID}))
             if (response.ok) {
                 create_album_songs(await response.json(), String(event.target.id.match(r)))
+            } else {
+                alert("Server is unreachable")
             }
         } else {
             let album_button = document.getElementById("albumButton" + String(event.target.id.match(r)))
@@ -40,7 +42,7 @@ if (user_logged_in) {
             if (saveButton.innerHTML == "+") {
                 saveButton.innerHTML = "✓"
                 saveButton.className = "btn btn-outline-success"
-                fetch("/add_song", {
+                let response = fetch("/add_song", {
                     method: "POST",
                     headers: {
                         "Content-Type":"application/json",
@@ -54,6 +56,9 @@ if (user_logged_in) {
                         "id": albumIDs[n-1]
                     })
                 })
+                if (!response.ok) {
+                    alert("Server is unreachable")
+                }
             } else {
                 saveButton.innerHTML = "+"
                 saveButton.className = "btn btn-outline-primary"
@@ -87,7 +92,7 @@ NewGenre.addEventListener("click", async function(event){
     try{
         let response = await fetch("/new_genre");
         if (! response.ok) {
-            throw new Error(response.status);
+            alert("Server is unreachable")
         }
         let body = await response.json();
         document.getElementById("genre").innerHTML=body["genre"];
@@ -127,49 +132,53 @@ function setup_user() {
         var currPage = 1
         document.getElementById("pageBar").style.display = "flex"
         let response = await fetch("/get_songs?" + new URLSearchParams({"user":user}))
-        let songs = await response.json()
-        let songsJSON = {}
-        for (let n = 0; n < songs.length; n++){
-            songsJSON["song"+String(n+1)] = songs[n]
-        }
-        if (Object.entries(songsJSON).length >= 10){
-            songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice(0,10)))
-        } else {
-            songs_on_page(songsJSON)
-        }
+        if (response.ok){
+            let songs = await response.json()
+            let songsJSON = {}
+            for (let n = 0; n < songs.length; n++){
+                songsJSON["song"+String(n+1)] = songs[n]
+            }
+            if (Object.entries(songsJSON).length >= 10){
+                songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice(0,10)))
+            } else {
+                songs_on_page(songsJSON)
+            }
 
-        for (let n = 0; n < songs.length && n < 10; n++){
-            document.getElementById("saveButton" + String(n+1)).className = "btn btn-outline-success"
-            document.getElementById("saveButton" + String(n+1)).innerHTML = "✓"
-        }
+            for (let n = 0; n < songs.length && n < 10; n++){
+                document.getElementById("saveButton" + String(n+1)).className = "btn btn-outline-success"
+                document.getElementById("saveButton" + String(n+1)).innerHTML = "✓"
+            }
 
-        if (songs.length > 10) {
-            previousPage = document.getElementById("previous")
-            nextPage = document.getElementById("next")
-            nextPage.addEventListener("click", function(event){
-                if (currPage*10 < songs.length) {
-                    currPage += 1
-                    if (songs.length >= currPage * 10){
+            if (songs.length > 10) {
+                previousPage = document.getElementById("previous")
+                nextPage = document.getElementById("next")
+                nextPage.addEventListener("click", function(event){
+                    if (currPage*10 < songs.length) {
+                        currPage += 1
+                        if (songs.length >= currPage * 10){
+                            songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice((currPage-1)*10,(currPage)*10)))
+                        } else {
+                            songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice((currPage-1)*10,songs.length)))
+                        }
+                        for (let n = 10*(currPage-1); n < 10*currPage && n < songs.length; n++) {
+                            document.getElementById("saveButton" + String(n%10+1)).className = "btn btn-outline-success"
+                            document.getElementById("saveButton" + String(n%10+1)).innerHTML = "✓"                    
+                        }   
+                    }
+                })
+                previousPage.addEventListener("click", function(event){
+                    if (currPage != 1){
+                        currPage-=1
                         songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice((currPage-1)*10,(currPage)*10)))
-                    } else {
-                        songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice((currPage-1)*10,songs.length)))
+                        for (let n = 0; n < 10*currPage && n < songs.length; n++) {
+                            document.getElementById("saveButton" + String(n%10+1)).className = "btn btn-outline-success"
+                            document.getElementById("saveButton" + String(n%10+1)).innerHTML = "✓"                    
+                        }
                     }
-                    for (let n = 10*(currPage-1); n < 10*currPage && n < songs.length; n++) {
-                        document.getElementById("saveButton" + String(n%10+1)).className = "btn btn-outline-success"
-                        document.getElementById("saveButton" + String(n%10+1)).innerHTML = "✓"                    
-                    }   
-                }
-            })
-            previousPage.addEventListener("click", function(event){
-                if (currPage != 1){
-                    currPage-=1
-                    songs_on_page(Object.fromEntries(Object.entries(songsJSON).slice((currPage-1)*10,(currPage)*10)))
-                    for (let n = 0; n < 10*currPage && n < songs.length; n++) {
-                        document.getElementById("saveButton" + String(n%10+1)).className = "btn btn-outline-success"
-                        document.getElementById("saveButton" + String(n%10+1)).innerHTML = "✓"                    
-                    }
-                }
-            })
+                })
+            }
+        } else {
+            alert("Server is unreachable")
         }
     })
 
@@ -271,6 +280,9 @@ function AddToGenres(genre) {
             },
             body: JSON.stringify({"genre": genre}),
         })
+        if (!response.ok){
+            alert("Server is unreachable")
+        }
     }
 
 }
@@ -288,7 +300,7 @@ async function get_songs(genre) {
 
         })
         if (! response.ok) {
-            throw new Error(response.status);
+            alert("Server is unreachable")
         }
         let body = await response.text();
         songs_on_page(JSON.parse(body))

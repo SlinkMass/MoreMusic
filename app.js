@@ -2,6 +2,8 @@ import fetch from "node-fetch";
 import express from "express";
 import fs from "fs";
 import "dotenv/config";
+//for testers there is a test account with the email divon29838@gufutu.com and the password TEST123456 on spotify which can be used to login with the
+//login button. it has userID 31cdzjpsezde2tehs5e7eik65c4u and is a temporary email.
 
 //For spotify api
 const client_id = process.env.CLIENT_ID
@@ -152,7 +154,7 @@ app.post("/search_songs", async function(req, resp){
     let genre = req.body.genre
     let limit = Number(req.body.limit)
     let data = JSON.parse(fs.readFileSync("./data/cache.json"))
-    if (genre != undefined || limit != undefined) {
+    if (genre != undefined && limit != undefined && !isNaN(limit)) {
         if (data["genre"] == genre) {
             delete data["genre"]
             resp.send(data)
@@ -269,7 +271,7 @@ app.post("/add_user", async function(req, resp){
         } else if (response.status == 429){
             resp.status(429).json({message: "Rate Limit Reached"})
         } else {
-            resp.status(400).json({message: "Invalid User"})
+            resp.status(403).json({message: "Invalid User"})
         }
     }
 })
@@ -288,7 +290,7 @@ app.get("/user_data", function(req, resp){
         if (data[user] != undefined){
             resp.send(data[user])
         } else {
-            resp.status(400).json({message: "Invalid User"})
+            resp.status(403).json({message: "Invalid User"})
         }
     }
 })
@@ -325,6 +327,7 @@ app.get("/callback", async function(req, resp){
         token = jsonResponse["access_token"]
         refresh_token = jsonResponse["refresh_token"]
         user_logged_in = true
+        console.log(token)
         let user_data = await fetch("https://api.spotify.com/v1/me", {
             method: "GET",
             headers: {
@@ -343,11 +346,13 @@ app.get("/callback", async function(req, resp){
             )
 
         } else {
+            console.log("no_user", await user_data.json())
             //User not in spotify database
             resp.redirect("/#")
         }
 
     } else {
+        console.log("no_authentication")
         //Authentication unsuccessful
         resp.redirect("/#")
     }
