@@ -3,6 +3,10 @@ import express from "express";
 import fs from "fs";
 import path from "path";
 import "dotenv/config";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 //for testers there is a test account with the email divon29838@gufutu.com and the password TEST123456 on spotify which can be used to login with the
 //login button. it has userID 31cdzjpsezde2tehs5e7eik65c4u and is a temporary email.
 
