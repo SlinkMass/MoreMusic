@@ -10,6 +10,20 @@ const __dirname = path.dirname(__filename);
 //for testers there is a test account with the email divon29838@gufutu.com and the password TEST123456 on spotify which can be used to login with the
 //login button. it has userID 31cdzjpsezde2tehs5e7eik65c4u and is a temporary email.
 
+// Ensure data folder exists
+const dataDir = path.join(__dirname, "data");
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+// Ensure JSON files exist
+["cache.json","users.json","songs.json"].forEach(file => {
+  const filePath = path.join(dataDir, file);
+  if (!fs.existsSync(filePath)){
+    fs.writeFileSync(filePath, JSON.stringify({}));
+  }
+});
+
 //For spotify api
 const client_id = process.env.CLIENT_ID
 const client_secret = process.env.CLIENT_SECRET
