@@ -112,7 +112,7 @@ function setup_user() {
     const loginButton = document.getElementById("loginButton")
     loginButton.innerHTML = "Sign Out"
     loginButton.className = "btn btn-outline-danger"
-    loginButton.parentElement.href = "http://127.0.0.1:5500"
+    loginButton.parentElement.href = "/"
     let newCol = document.createElement("div")
     newCol.className = "col mt-5"
     loginButton.parentElement.parentElement.parentElement.appendChild(newCol)

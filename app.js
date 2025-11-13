@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import express from "express";
 import fs from "fs";
+import path from "path";
 import "dotenv/config";
 //for testers there is a test account with the email divon29838@gufutu.com and the password TEST123456 on spotify which can be used to login with the
 //login button. it has userID 31cdzjpsezde2tehs5e7eik65c4u and is a temporary email.
@@ -15,7 +16,14 @@ var user_logged_in = false
 //NOTE can use app.route for each entity
 export const app = express();
 app.use(express.json());
-app.use(express.static("client"));
+
+// Serve static files from client folder
+app.use(express.static(path.join(__dirname, "client")));
+
+// Catch-all route for frontend routing
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "index.html"));
+});
 
 async function newGenre() {
     //Here we must find a genre that has some search results with spotify (roughly a fifth of them do so can take some time)
@@ -44,7 +52,7 @@ async function newGenre() {
                     })
                     songs_response["song"+String(n+1)] = {"name":song["name"], "artists":artists.join(", "), "image":song["album"]["images"][1]["url"], "link":song["external_urls"]["spotify"], "albumID":song["album"]["id"]}
                 })
-                fs.writeFileSync("./data/cache.json", JSON.stringify(songs_response));
+                fs.writeFileSync(path.join(__dirname,"data","cache.json"), JSON.stringify(songs_response));
                 resolved = true
                 break
             }
@@ -55,7 +63,7 @@ async function newGenre() {
 }
 
 app.get("/new_genre", async function(req, resp){
-    let genre = JSON.parse(fs.readFileSync("./data/cache.json"))
+    let genre = JSON.parse(fs.readFileSync(path.join(__dirname,"data","cache.json")))
     if (genre["genre"] != undefined) {
     await resp.send({"genre": genre["genre"]})
     } else {
@@ -70,10 +78,10 @@ app.post("/add_genre", async function(req, resp){
     if (user == undefined || genre == undefined) {
         resp.status(400).json({message: "Bad Request"})
     } else {
-        let data = JSON.parse(fs.readFileSync("./data/users.json"))
+        let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
         if (data[user] != undefined) {
             data[user]["previous_genres"].push(genre)
-            fs.writeFileSync("./data/users.json", JSON.stringify(data))
+            fs.writeFileSync(path.join(__dirname,"data","users.json"), JSON.stringify(data))
             resp.status(200).json({message: "ok"})
         } else {
             resp.status(403).json({message: "Invalid User"})
@@ -83,7 +91,7 @@ app.post("/add_genre", async function(req, resp){
 
 app.get("/get_genres", async function(req, resp){
     let user = req.query.user
-    let data = JSON.parse(fs.readFileSync("./data/users.json"))
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
     if (user == undefined){
         resp.status(400).json({message: "Bad Request"})
     } else if (data[user] == undefined){
@@ -105,13 +113,13 @@ app.post("/add_song", async function(req, resp){
     if (albumID == undefined || link == undefined || image == undefined || artists == undefined || name == undefined || user == undefined) {
         resp.status(400).json({message: "Bad Request"})
     } else {
-        let data = JSON.parse(fs.readFileSync("./data/songs.json"))
+        let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","songs.json")))
         if (data[user] == undefined) {
             data[user] = [{"name": name, "artists": artists, "image": image, "link": link, "albumID": albumID}]
         } else {
             data[user].push({"name": name, "artists": artists, "image": image, "link": link, "albumID": albumID})
         }
-        fs.writeFileSync("./data/songs.json", JSON.stringify(data))
+        fs.writeFileSync(path.join(__dirname,"data","songs.json"), JSON.stringify(data))
         resp.status(200).json({message: "ok"})
     }
 }) 
@@ -119,7 +127,7 @@ app.post("/add_song", async function(req, resp){
 app.delete("/remove_song", async function(req, resp){
     let user = req.query.user
     let link = req.header("link")
-    let data = JSON.parse(fs.readFileSync("./data/songs.json"))
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","songs.json")))
     if (user == undefined || link == undefined) {
         resp.status(400).json({message: "Bad Request"})
     } else if (data[user] == undefined){
@@ -130,7 +138,7 @@ app.delete("/remove_song", async function(req, resp){
                 data[user].splice(n, 1)
             }
         }
-        fs.writeFileSync("./data/songs.json", JSON.stringify(data))
+        fs.writeFileSync(path.join(__dirname,"data","songs.json"), JSON.stringify(data))
         resp.status(200).json({message: "ok"})
     }
 })
@@ -140,7 +148,7 @@ app.get("/get_songs", async function(req, resp){
     if (user == undefined){
         resp.status(400).json({message: "Bad Request"})
     } else {
-        let data = JSON.parse(fs.readFileSync("./data/songs.json"))
+        let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","songs.json")))
         if (data[user] != undefined){
             resp.send(data[user])
         } else {
@@ -153,7 +161,7 @@ app.get("/get_songs", async function(req, resp){
 app.post("/search_songs", async function(req, resp){
     let genre = req.body.genre
     let limit = Number(req.body.limit)
-    let data = JSON.parse(fs.readFileSync("./data/cache.json"))
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","cache.json")))
     if (genre != undefined && limit != undefined && !isNaN(limit)) {
         if (data["genre"] == genre) {
             delete data["genre"]
@@ -262,10 +270,10 @@ app.post("/add_user", async function(req, resp){
         })
         if (response.ok) {
             let user_data_json = await response.json()
-            let data = JSON.parse(fs.readFileSync("./data/users.json"))
+            let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
             if (!(user_data_json["id"] in data)) {
                 data[user_data_json["id"]] = {"name": user_data_json["display_name"], "previous_genres": []}
-                fs.writeFileSync("./data/users.json", JSON.stringify(data))
+                fs.writeFileSync(path.join(__dirname,"data","users.json"), JSON.stringify(data))
             }
             resp.status(200).json({message: "ok"})
         } else if (response.status == 429){
@@ -277,7 +285,7 @@ app.post("/add_user", async function(req, resp){
 })
 
 app.get("/get_users", function(req, resp){
-    let data = JSON.parse(fs.readFileSync("./data/users.json"))
+    let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
     resp.send(Object.keys(data))
 })
 
@@ -286,7 +294,7 @@ app.get("/user_data", function(req, resp){
     if (user == undefined){
         resp.status(400).json({message: "Bad Request"})
     } else {
-        let data = JSON.parse(fs.readFileSync("./data/users.json"))
+        let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
         if (data[user] != undefined){
             resp.send(data[user])
         } else {
@@ -299,7 +307,7 @@ app.get("/login", async function(req, resp){
     let authUrl = ("https://accounts.spotify.com/authorize?" + new URLSearchParams({
         client_id: client_id,
         response_type: "code",
-        redirect_uri: "http://127.0.0.1:5500/callback",
+        redirect_uri: process.env.REDIRECT_URI,
         scope: ["user-read-private"]
     }).toString())
     resp.redirect(authUrl)
@@ -318,7 +326,7 @@ app.get("/callback", async function(req, resp){
         },
         body: new URLSearchParams({
             code: code,
-            redirect_uri: "http://127.0.0.1:5500/callback",
+            redirect_uri: process.env.REDIRECT_URI,
             grant_type: "authorization_code"
           }).toString()
     })
@@ -336,10 +344,10 @@ app.get("/callback", async function(req, resp){
         })
         if (user_data.ok) {
             let user_data_json = await user_data.json()
-            let data = JSON.parse(fs.readFileSync("./data/users.json"))
+            let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
             if (!(user_data_json["id"] in data)) {
                 data[user_data_json["id"]] = {"name": user_data_json["display_name"], "previous_genres": []}
-                fs.writeFileSync("./data/users.json", JSON.stringify(data))
+                fs.writeFileSync(path.join(__dirname,"data","users.json"), JSON.stringify(data))
             }
             resp.redirect("/?" + 
                 new URLSearchParams({user: user_data_json["id"]})
