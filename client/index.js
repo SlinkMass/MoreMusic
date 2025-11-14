@@ -42,7 +42,7 @@ if (user_logged_in) {
             if (saveButton.innerHTML == "+") {
                 saveButton.innerHTML = "✓"
                 saveButton.className = "btn btn-outline-success"
-                let response = fetch("/api/add_song", {
+                let response = await fetch("/api/add_song", {
                     method: "POST",
                     headers: {
                         "Content-Type":"application/json",
