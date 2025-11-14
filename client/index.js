@@ -253,7 +253,7 @@ function songs_on_page(song_data) {
     }
 }
 
-function AddToGenres(genre) {
+async function AddToGenres(genre) {
     previous_genres.push(genre)
     previousGenres = document.getElementById("PrevGenres")
     let NewGenre = document.createElement("button")
@@ -272,7 +272,7 @@ function AddToGenres(genre) {
         get_songs(event.target.innerText)
     })
     if (user_logged_in && document.getElementById("genre").innerText != "") {
-        let response = fetch("/api/add_genre", {
+        let response = await fetch("/api/add_genre", {
             method: "POST",
             headers: {
                 "Content-Type":"application/json",
@@ -290,21 +290,22 @@ function AddToGenres(genre) {
 async function get_songs(genre) {
     //Get songs for the genre
     
-    try{
+    try {
         let response = await fetch("/api/search_songs", {
             method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({"genre": genre, "limit":10}),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ genre, limit: 10 })
+        });
 
-        })
-        if (! response.ok) {
-            alert("Server is unreachable")
+        if (!response.ok) {
+            alert(`Server returned status ${response.status}`);
+            return;
         }
-        let body = await response.text();
-        songs_on_page(JSON.parse(body))
+
+        let body = await response.json();
+        songs_on_page(body);
+
     } catch(e) {
         alert(e);
-    }    
+    }
 }
