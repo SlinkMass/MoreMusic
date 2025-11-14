@@ -38,11 +38,6 @@ app.use(express.json());
 // Serve static files from client folder
 app.use(express.static(path.join(__dirname, "client")));
 
-// Catch-all route for frontend routing
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "index.html"));
-});
-
 async function newGenre() {
     //Here we must find a genre that has some search results with spotify (roughly a fifth of them do so can take some time)
     const response = await fetch("https://binaryjazz.us/wp-json/genrenator/v1/genre/5");
@@ -80,7 +75,7 @@ async function newGenre() {
     }
 }
 
-app.get("/new_genre", async function(req, resp){
+app.get("/api/new_genre", async function(req, resp){
     let genre = JSON.parse(fs.readFileSync(path.join(__dirname,"data","cache.json")))
     if (genre["genre"] != undefined) {
     await resp.send({"genre": genre["genre"]})
@@ -90,7 +85,7 @@ app.get("/new_genre", async function(req, resp){
     newGenre() //finds genre for the next songs
 })
 
-app.post("/add_genre", async function(req, resp){
+app.post("/api/add_genre", async function(req, resp){
     let genre = req.body.genre
     let user = req.header("user")
     if (user == undefined || genre == undefined) {
@@ -107,7 +102,7 @@ app.post("/add_genre", async function(req, resp){
     }
 })
 
-app.get("/get_genres", async function(req, resp){
+app.get("/api/get_genres", async function(req, resp){
     let user = req.query.user
     let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
     if (user == undefined){
@@ -121,7 +116,7 @@ app.get("/get_genres", async function(req, resp){
 
 
 
-app.post("/add_song", async function(req, resp){
+app.post("/api/add_song", async function(req, resp){
     let user = req.header("user")
     let name = req.body.name
     let artists = req.body.artists
@@ -142,7 +137,7 @@ app.post("/add_song", async function(req, resp){
     }
 }) 
 
-app.delete("/remove_song", async function(req, resp){
+app.delete("/api/remove_song", async function(req, resp){
     let user = req.query.user
     let link = req.header("link")
     let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","songs.json")))
@@ -161,7 +156,7 @@ app.delete("/remove_song", async function(req, resp){
     }
 })
 
-app.get("/get_songs", async function(req, resp){
+app.get("/api/get_songs", async function(req, resp){
     let user = req.query.user
     if (user == undefined){
         resp.status(400).json({message: "Bad Request"})
@@ -176,7 +171,7 @@ app.get("/get_songs", async function(req, resp){
 })
 
 //################SPOTIFY API#################
-app.post("/search_songs", async function(req, resp){
+app.post("/api/search_songs", async function(req, resp){
     let genre = req.body.genre
     let limit = Number(req.body.limit)
     let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","cache.json")))
@@ -225,7 +220,7 @@ async function SearchForSong(genre, limit, resp){
 }
 
 
-app.get("/album_data", async function (req, resp) {
+app.get("/api/album_data", async function (req, resp) {
     let albumID = req.query.id
     let response = await fetch(`https://api.spotify.com/v1/albums/${albumID}/tracks`, {
         method: "GET",
@@ -276,7 +271,7 @@ export async function GetToken() {
     }
 }
 //####################USER_ENTITY##################
-app.post("/add_user", async function(req, resp){
+app.post("/api/add_user", async function(req, resp){
     let user = req.body.user
     if (user == undefined){
         resp.status(400).json({message: "Bad Request"})
@@ -302,12 +297,12 @@ app.post("/add_user", async function(req, resp){
     }
 })
 
-app.get("/get_users", function(req, resp){
+app.get("/api/get_users", function(req, resp){
     let data = JSON.parse(fs.readFileSync(path.join(__dirname,"data","users.json")))
     resp.send(Object.keys(data))
 })
 
-app.get("/user_data", function(req, resp){
+app.get("/api/user_data", function(req, resp){
     let user = req.query.user
     if (user == undefined){
         resp.status(400).json({message: "Bad Request"})
@@ -321,7 +316,7 @@ app.get("/user_data", function(req, resp){
     }
 })
 
-app.get("/login", async function(req, resp){
+app.get("/api/login", async function(req, resp){
     let authUrl = ("https://accounts.spotify.com/authorize?" + new URLSearchParams({
         client_id: client_id,
         response_type: "code",
@@ -332,7 +327,7 @@ app.get("/login", async function(req, resp){
 })
 
 //Only use via /login
-app.get("/callback", async function(req, resp){
+app.get("/api/callback", async function(req, resp){
     let code = req.query.code || null;
     let error = req.query.error || null;
 
@@ -383,6 +378,15 @@ app.get("/callback", async function(req, resp){
         resp.redirect("/#")
     }
 })
+
+app.get("*", (req, res) => {
+  // If it's an API route, do NOT send index.html
+  if (req.path.startsWith("/api")) {
+    return res.status(404).json({ error: "API route not found" });
+  }
+
+  res.sendFile(path.join(__dirname, "client", "index.html"));
+});
 
 GetToken()
 newGenre()

@@ -16,7 +16,7 @@ Array.from(document.getElementsByClassName("seeSongs")).forEach(function(element
         const r =  new RegExp("\\d+")
         if (event.target.innerHTML == "See Songs") {
             let albumID = albumIDs[Number(event.target.id.match(r))-1]
-            let response = await fetch("/album_data?" + new URLSearchParams({"id":albumID}))
+            let response = await fetch("/api/album_data?" + new URLSearchParams({"id":albumID}))
             if (response.ok) {
                 create_album_songs(await response.json(), String(event.target.id.match(r)))
             } else {
@@ -42,7 +42,7 @@ if (user_logged_in) {
             if (saveButton.innerHTML == "+") {
                 saveButton.innerHTML = "✓"
                 saveButton.className = "btn btn-outline-success"
-                let response = fetch("/add_song", {
+                let response = fetch("/api/add_song", {
                     method: "POST",
                     headers: {
                         "Content-Type":"application/json",
@@ -62,7 +62,7 @@ if (user_logged_in) {
             } else {
                 saveButton.innerHTML = "+"
                 saveButton.className = "btn btn-outline-primary"
-                let response = fetch("/remove_song?" + new URLSearchParams({"user":user}), {
+                let response = fetch("/api/remove_song?" + new URLSearchParams({"user":user}), {
                     method: "DELETE",
                     headers: {
                         "Content-Type":"application/json",
@@ -90,7 +90,7 @@ NewGenre.addEventListener("click", async function(event){
     }
     //Get a new genre
     try{
-        let response = await fetch("/new_genre");
+        let response = await fetch("/api/new_genre");
         if (! response.ok) {
             alert("Server is unreachable")
         }
@@ -131,7 +131,7 @@ function setup_user() {
 
         var currPage = 1
         document.getElementById("pageBar").style.display = "flex"
-        let response = await fetch("/get_songs?" + new URLSearchParams({"user":user}))
+        let response = await fetch("/api/get_songs?" + new URLSearchParams({"user":user}))
         if (response.ok){
             let songs = await response.json()
             let songsJSON = {}
@@ -183,7 +183,7 @@ function setup_user() {
     })
 
     //Add the users' stored previous genres
-    let response = fetch("/get_genres?" + new URLSearchParams({"user":user}).toString())
+    let response = fetch("/api/get_genres?" + new URLSearchParams({"user":user}).toString())
         .then(response => response.json())
         
         .then(data => data["previous_genres"].forEach(function(genre){
@@ -272,7 +272,7 @@ function AddToGenres(genre) {
         get_songs(event.target.innerText)
     })
     if (user_logged_in && document.getElementById("genre").innerText != "") {
-        let response = fetch("/add_genre", {
+        let response = fetch("/api/add_genre", {
             method: "POST",
             headers: {
                 "Content-Type":"application/json",
@@ -291,7 +291,7 @@ async function get_songs(genre) {
     //Get songs for the genre
     
     try{
-        let response = await fetch("/search_songs", {
+        let response = await fetch("/api/search_songs", {
             method: "POST",
             headers: {
                 "Content-Type":"application/json"
